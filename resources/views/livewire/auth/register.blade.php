@@ -13,6 +13,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public string $phone = '';
+    public string $address = '';
+    public string $role = 'buyer';
 
     /**
      * Handle an incoming registration request.
@@ -23,9 +26,15 @@ new #[Layout('components.layouts.auth')] class extends Component {
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
-        ]);
+            'phone' => ['nullable', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'role' => ['required', 'in:buyer,seller'],
+
+]);
+
 
         $validated['password'] = Hash::make($validated['password']);
+
 
         event(new Registered(($user = User::create($validated))));
 
@@ -84,6 +93,38 @@ new #[Layout('components.layouts.auth')] class extends Component {
             :placeholder="__('Confirm password')"
             viewable
         />
+
+        <!-- Phone -->
+        <flux:input
+            wire:model="phone"
+            :label="__('Phone number')"
+            type="tel"
+            required
+            autocomplete="tel"
+            :placeholder="__('Phone number')"
+        />
+
+        <!-- Address -->
+        <flux:input
+            wire:model="address"
+            :label="__('Address')"
+            type="text"
+            required
+            autocomplete="address"
+            :placeholder="__('Address')"
+        />
+
+        <!-- Role (buyer or seller) -->
+        <flux:select
+            wire:model="role"
+            :label="__('Role')"
+            required
+        >
+            <option value="buyer">{{ __('Buyer') }}</option>
+            <option value="seller">{{ __('Seller') }}</option>
+
+        </flux:select>
+
 
         <div class="flex items-center justify-end">
             <flux:button type="submit" variant="primary" class="w-full">

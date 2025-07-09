@@ -4,6 +4,11 @@
         @include('partials.head')
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
+
+        @php
+            $role = Auth::user()->role;
+        @endphp
+
         <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
@@ -12,9 +17,30 @@
             </a>
 
             <flux:navlist variant="outline">
+
                 <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+
+                @if ($role == 'seller')
+                    <flux:navlist.item icon="home" :href="route('seller.dashboard')" :current="request()->routeIs('seller.dashboard')" wire:navigate>
+                    {{ __('Seller Dashboard') }}
+                    </flux:navlist.item>
+                @elseif ($role == 'buyer')
+                    <flux:navlist.item icon="home" :href="route('buyer.dashboard')" :current="request()->routeIs('buyer.dashboard')" wire:navigate>
+                    {{ __('Buyer Dashboard') }}
+                    </flux:navlist.item>
+                @else
+                  <flux:navlist.item
+                        icon="home"
+                        :href="route('dashboard')"
+                        :current="request()->routeIs('dashboard')" {{-- ← typo fixed here --}}
+                        wire:navigate
+                    >
+                        {{ __('Dashboard') }}
+                    </flux:navlist.item>
+                @endif
+
                 </flux:navlist.group>
+
             </flux:navlist>
 
             <flux:spacer />
