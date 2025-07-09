@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\User;
-use App\Models\Product;
+use App\Models\Products;
 
 class Store extends Model
 {
@@ -31,7 +31,7 @@ class Store extends Model
     // Get the products for the store
     public function products()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Products::class);
     }
 
 }

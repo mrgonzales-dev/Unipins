@@ -16,6 +16,9 @@ use App\Livewire\Buyer\ProductCatalogue as buyerProductCatalogue;
 // Store Manager
 use App\Livewire\Seller\StoreManager as StoreManager;
 
+// Product Manager
+use App\Livewire\Seller\ProductManager as ProductManager;
+
 use function Livewire\Volt\protect;
 
 Route::get('/', function () {
@@ -39,9 +42,10 @@ Route::middleware(['auth'])->group(function () {
     //Store Manager
     Route::get('seller/store-manager', StoreManager::class)->middleware(['role:seller'])->name('seller.store-manager');
 
-
-
-
+    //Product Manager
+    Route::get('seller/product-manager/{storeId}', ProductManager::class)
+        ->middleware(['auth', 'role:seller'])
+        ->name('seller.product-manager');
 
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');
