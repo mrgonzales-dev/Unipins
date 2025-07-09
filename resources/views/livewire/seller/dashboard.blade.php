@@ -17,10 +17,6 @@
                 <span class="dark:text-white font-medium">{{ Auth::user()->email }}</span>
         </div>
         <div class="flex justify-between border-b border-zinc-200 dark:border-zinc-700 pb-2">
-            <span class="text-zinc-500">Store Name</span>
-            <span class="dark:text-white font-medium">{{ auth()->user()->store_name ?? 'Not set' }}</span>
-        </div>
-        <div class="flex justify-between border-b border-zinc-200 dark:border-zinc-700 pb-2">
             <span class="text-zinc-500">Phone Number</span>
             <span class="dark:text-white font-medium">{{ auth()->user()->phone ?? 'Not set' }}</span>
         </div>
@@ -55,31 +51,15 @@
     <!-- Quick Actions -->
     <div class="space-y-4">
         <h2 class="text-2xl font-bold text-zinc-900 dark:text-white">⚙️ Seller Tools</h2>
-
         <div class="flex flex-wrap gap-4">
-            {{-- <a href="{{ route('products.create') }}" --}}
-            <a href=""
-               class="px-5 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-semibold">
-                ➕ Add New Product
-            </a>
 
-            {{-- <a href="{{ route('orders.index') }}" --}}
-            <a href=""
-                class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold">
-                📦 View Orders
-            </a>
+            <a href="{{ route('seller.store-manager') }}" class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold">📦 View Stores </a>
 
-            {{-- <a href="{{ route('analytics') }}" --}}
-            <a href=""
-                              class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold">
-                📊 Sales Analytics
-            </a>
+           {{-- <a href="{{ route('analytics') }}" --}}
+            <a href="" class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold"> 📊 Sales Analytics </a>
 
             {{-- <a href="{{ route('settings') }}" --}}
-            <a href=""
-                class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold">
-                ⚙️ Store Settings
-            </a>
+            <a href="" class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold"> ⚙️ Store Settings </a>
         </div>
     </div>
 

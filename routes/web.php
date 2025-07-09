@@ -9,11 +9,12 @@ use Illuminate\Support\Facades\Route;
 use App\Livewire\Buyer\Dashboard as buyerDashboard;
 use App\Livewire\Seller\Dashboard as sellerDashboard;
 
-
 // Product Catalogue
 use App\Livewire\Seller\ProductCatalogue as ProductCatalogue;
 use App\Livewire\Buyer\ProductCatalogue as buyerProductCatalogue;
 
+// Store Manager
+use App\Livewire\Seller\StoreManager as StoreManager;
 
 use function Livewire\Volt\protect;
 
@@ -35,10 +36,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('seller/product-catalogue', ProductCatalogue::class)->middleware(['role:seller'])->name('seller.product-catalogue');
     Route::get('buyer/product-catalogue', buyerProductCatalogue::class)->middleware(['role:buyer'])->name('buyer.product-catalogue');
 
+    //Store Manager
+    Route::get('seller/store-manager', StoreManager::class)->middleware(['role:seller'])->name('seller.store-manager');
 
 
-    Route::get('buyer/product-catalogue', buyerDashboard::class)->middleware(['role:buyer'])->name('buyer.product-catalogue');
-    Route::get('seller/product-catalogue', sellerDashboard::class)->middleware(['role:seller'])->name('seller.product-catalogue');
+
 
 
     Route::get('settings/profile', Profile::class)->name('settings.profile');
