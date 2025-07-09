@@ -43,7 +43,17 @@ class Login extends Component
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        //redirect if buyer or seller
+
+        if (Auth::user()->role == 'buyer') {
+            $this->redirectIntended(route('buyer.dashboard', absolute: false), navigate: true);
+        } elseif (Auth::user()->role == 'seller') {
+            $this->redirectIntended(route('seller.dashboard', absolute: false), navigate: true);
+        } else {
+            $this->redirectIntended(route('dashboard', absolute: false), navigate: true);
+        }
+
+        // $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }
 
     /**

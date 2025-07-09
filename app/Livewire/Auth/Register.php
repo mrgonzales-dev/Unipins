@@ -21,6 +21,12 @@ class Register extends Component
 
     public string $password_confirmation = '';
 
+    public string $role = 'buyer';
+
+    public string $address = '';
+
+    public string $phone = '';
+
     /**
      * Handle an incoming registration request.
      */
@@ -30,6 +36,9 @@ class Register extends Component
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'string', 'max:255'],
+            'address' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:255'],
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -38,6 +47,13 @@ class Register extends Component
 
         Auth::login($user);
 
-        $this->redirect(route('dashboard', absolute: false), navigate: true);
+        if (Auth::user()->role == 'buyer') {
+            $this->redirectIntended(route('buyer.dashboard', absolute: false), navigate: true);
+        } elseif (Auth::user()->role == 'seller') {
+            $this->redirectIntended(route('seller.dashboard', absolute: false), navigate: true);
+        } else {
+            $this->redirectIntended(route('dashboard', absolute: false), navigate: true);
+        }
+
     }
 }

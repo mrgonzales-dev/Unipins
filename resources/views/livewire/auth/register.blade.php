@@ -48,6 +48,39 @@
             viewable
         />
 
+        <!-- Address (with autocomplete) -->
+        <flux:input
+            wire:model="address"
+            :label="__('Address')"
+            type="text"
+            required
+            autocomplete="address"
+            :placeholder="__('Address')"
+        />
+
+
+        <!-- Phone -->
+        <flux:input
+            wire:model="phone"
+            :label="__('Phone number')"
+            type="text"
+            required
+            autocomplete="phone_number"
+            :placeholder="__('Phone number')"
+        />
+
+        <!-- Role (buyer or seller) -->
+        <flux:select
+            wire:model="role"
+            :label="__('Role')"
+            required
+        >
+            <option value="buyer">{{ __('Buyer') }}</option>
+            <option value="seller">{{ __('Seller') }}</option>
+
+        </flux:select>
+
+
         <div class="flex items-center justify-end">
             <flux:button type="submit" variant="primary" class="w-full">
                 {{ __('Create account') }}
