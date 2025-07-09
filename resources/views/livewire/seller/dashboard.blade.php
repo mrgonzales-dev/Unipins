@@ -6,7 +6,7 @@
             🛍️ Seller Dashboard
         </h1>
         <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Logged in as {{ auth()->user()->name }}
+            Logged in as {{ Auth::user()->name }}
         </span>
     </div>
 
@@ -14,15 +14,15 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
         <div class="flex justify-between border-b border-zinc-200 dark:border-zinc-700 pb-2">
             <span class="text-zinc-500">Email</span>
-            <span class="font-medium">{{ auth()->user()->email }}</span>
+                <span class="dark:text-white font-medium">{{ Auth::user()->email }}</span>
         </div>
         <div class="flex justify-between border-b border-zinc-200 dark:border-zinc-700 pb-2">
             <span class="text-zinc-500">Store Name</span>
-            <span class="font-medium">{{ auth()->user()->store_name ?? 'Not set' }}</span>
+            <span class="dark:text-white font-medium">{{ auth()->user()->store_name ?? 'Not set' }}</span>
         </div>
         <div class="flex justify-between border-b border-zinc-200 dark:border-zinc-700 pb-2">
             <span class="text-zinc-500">Phone Number</span>
-            <span class="font-medium">{{ auth()->user()->phone_number ?? 'Not set' }}</span>
+            <span class="dark:text-white font-medium">{{ auth()->user()->phone ?? 'Not set' }}</span>
         </div>
         <div class="flex justify-between border-b border-zinc-200 dark:border-zinc-700 pb-2">
             <span class="text-zinc-500">Role</span>

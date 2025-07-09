@@ -20,6 +20,7 @@
 
             <flux:navlist variant="outline">
 
+                <!-- Dashboard -->
                 @if ($role == 'seller')
                     <flux:navlist.group :heading="__('Platform')" class="grid">
                         <flux:navlist.item icon="home" :href="route('seller.dashboard')" :current="request()->routeIs('seller.dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
@@ -33,6 +34,14 @@
                         <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                     </flux:navlist.group>
                 @endif
+
+                {{-- UniShop (product catalogue) --}}
+                @if ($role == 'seller')
+                    <flux:navlist.group :heading="__('UniShop')" class="grid">
+                        <flux:navlist.item icon="folder-git-2" :href="route('seller.product-catalogue')" :current="request()->routeIs('product.index')" wire:navigate>{{ __('Product Catalogue') }}</flux:navlist.item>
+                    </flux:navlist.group>
+                @endif
+
             </flux:navlist>
 
             <flux:spacer />

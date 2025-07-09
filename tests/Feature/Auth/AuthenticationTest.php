@@ -3,6 +3,9 @@
 use App\Livewire\Auth\Login;
 use App\Models\User;
 use Livewire\Livewire;
+use App\Livewire\Seller\Dashboard as SellerDashboard;
+use App\Livewire\Buyer\Dashboard as BuyerDashboard;
+
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -12,8 +15,11 @@ test('login screen can be rendered', function () {
     $response->assertStatus(200);
 });
 
-test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+test('buyer users can authenticate using the login screen', function () {
+    $user = User::factory()->create([
+        'role' => 'buyer',
+        'password' => bcrypt('password')
+    ]);
 
     $response = Livewire::test(Login::class)
         ->set('email', $user->email)
@@ -22,7 +28,24 @@ test('users can authenticate using the login screen', function () {
 
     $response
         ->assertHasNoErrors()
-        ->assertRedirect(route('dashboard', absolute: false));
+        ->assertRedirect(route('buyer.dashboard', absolute: false));
+    $this->assertAuthenticated();
+});
+
+test('seller users can authenticate using the login screen', function () {
+    $user = User::factory()->create([
+        'role' => 'seller',
+        'password' => bcrypt('password')
+    ]);
+
+    $response = Livewire::test(Login::class)
+        ->set('email', $user->email)
+        ->set('password', 'password')
+        ->call('login');
+
+    $response
+        ->assertHasNoErrors()
+        ->assertRedirect(route('seller.dashboard', absolute: false));
 
     $this->assertAuthenticated();
 });

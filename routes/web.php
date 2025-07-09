@@ -24,6 +24,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('buyer/dashboard', buyerDashboard::class)->middleware(['role:buyer'])->name('buyer.dashboard');
     Route::get('seller/dashboard', sellerDashboard::class)->middleware(['role:seller'])->name('seller.dashboard');
 
+
+    Route::get('buyer/product-catalogue', buyerDashboard::class)->middleware(['role:buyer'])->name('buyer.product-catalogue');
+    Route::get('seller/product-catalogue', sellerDashboard::class)->middleware(['role:seller'])->name('seller.product-catalogue');
+
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
