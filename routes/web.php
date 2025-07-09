@@ -10,6 +10,13 @@ use App\Livewire\Buyer\Dashboard as buyerDashboard;
 use App\Livewire\Seller\Dashboard as sellerDashboard;
 
 
+// Product Catalogue
+use App\Livewire\Seller\ProductCatalogue as ProductCatalogue;
+use App\Livewire\Buyer\ProductCatalogue as buyerProductCatalogue;
+
+
+use function Livewire\Volt\protect;
+
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
@@ -24,9 +31,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('buyer/dashboard', buyerDashboard::class)->middleware(['role:buyer'])->name('buyer.dashboard');
     Route::get('seller/dashboard', sellerDashboard::class)->middleware(['role:seller'])->name('seller.dashboard');
 
+    // Product Catalogue
+    Route::get('seller/product-catalogue', ProductCatalogue::class)->middleware(['role:seller'])->name('seller.product-catalogue');
+    Route::get('buyer/product-catalogue', buyerProductCatalogue::class)->middleware(['role:buyer'])->name('buyer.product-catalogue');
+
+
 
     Route::get('buyer/product-catalogue', buyerDashboard::class)->middleware(['role:buyer'])->name('buyer.product-catalogue');
     Route::get('seller/product-catalogue', sellerDashboard::class)->middleware(['role:seller'])->name('seller.product-catalogue');
+
 
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');

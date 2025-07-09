@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use App\Models\Store;
 
 class User extends Authenticatable
 {
@@ -27,6 +28,7 @@ class User extends Authenticatable
         'phone',
     ];
 
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -36,6 +38,12 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+
+    public function stores()
+    {
+        return $this->hasMany(Store::class);
+    }
 
     /**
      * Get the attributes that should be cast.
