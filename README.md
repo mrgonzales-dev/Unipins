@@ -1,4 +1,4 @@
-# 🎓 Unipins – University Merch Platform
+# Unipins – University Merch Platform
 
 A centralized platform for universities to showcase and sell their official merchandise.  
 Everything is tracked, seamless, and reliable. No more messy transactions. 🚀
