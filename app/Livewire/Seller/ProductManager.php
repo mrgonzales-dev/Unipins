@@ -9,17 +9,27 @@ use App\Models\Store;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 
+// Spatie Media Integration
+use Livewire\WithFileUploads;
+
+
 class ProductManager extends Component
 {
+    // ===== SPATIE Media Uploads=====
+    use WithFileUploads;
+    public $productImages = [];
+    //=================================
+
+    // ===== Livewire Modal =====
     public Store $store;
     public $products;
-
     public $productId = null;
     public $productName = '';
     public $productDescription = '';
     public $productPrice = '';
     public $productStock = '';
     public $confirmationName = '';
+    // ===========================
 
     public function mount($storeId)
     {
@@ -48,14 +58,22 @@ class ProductManager extends Component
             'productDescription' => 'nullable|string|max:1000',
             'productPrice' => 'required|numeric|min:0',
             'productStock' => 'required|integer|min:0',
+            'productImages.*' => 'image|max:2048', // 2MB
         ]);
 
-        $this->store->products()->create([
+        $product = $this->store->products()->create([
             'name' => $this->productName,
             'description' => $this->productDescription,
             'price' => $this->productPrice,
             'stock' => $this->productStock,
         ]);
+
+        // Attach product images
+        foreach ($this->productImages as $image) {
+
+            $product->addMedia($image)->toMediaCollection('product_images');
+
+        }
 
         $this->reset(['productName', 'productDescription', 'productPrice', 'productStock']);
         $this->loadProducts();

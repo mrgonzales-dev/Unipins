@@ -19,7 +19,10 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($products as $product)
                 <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-md overflow-hidden">
-                    <div class="p-4 space-y-2">
+                 @if($product->getFirstMediaUrl('product_images'))
+            <img src="{{ $product->getFirstMediaUrl('product_images') }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
+            @endif
+            <div class="p-4 space-y-2">
                         <h2 class="text-lg font-semibold text-zinc-900 dark:text-white">{{ $product->name }}</h2>
                         <p class="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3">{{ $product->description }}</p>
                         <div class="flex justify-between items-center mt-4 text-sm">
@@ -217,6 +220,15 @@
 
             <!-- Form -->
             <form wire:submit.prevent="createProduct" class="space-y-4">
+                <!-- Image -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Product Image</label>
+                    <input type="file" wire:model="productImages" multiple
+                           class="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white p-3 focus:ring-2 focus:ring-indigo-500">
+                    @error('productImage') <p class="text-red-500 text-sm">{{ $message }}</p> @enderror
+                </div>
+
+
                 <!-- Name -->
                 <div>
                     <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Product Name</label>

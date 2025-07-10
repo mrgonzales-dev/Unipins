@@ -15,7 +15,7 @@
         "livewire/flux": "^2.1.1",
         "livewire/volt": "^1.7.0",
         "spatie/laravel-activitylog": "^4.10",
-        "spatie/laravel-medialibrary": "^11.13",
+        "spatie/laravel-medialibrary": "^11.0.0",
         "spatie/laravel-permission": "^6.20"
     },
     "require-dev": {
