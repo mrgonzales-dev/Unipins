@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use App\Models\Products;
 
 // this is for factory
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -34,7 +35,7 @@ class User extends Authenticatable
     }
 
     public function products() {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Products::class);
     }
 
     /**

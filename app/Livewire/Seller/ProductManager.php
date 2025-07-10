@@ -1,5 +1,7 @@
 <?php
 
+
+
 namespace App\Livewire\Seller;
 
 use App\Models\Products;
@@ -12,14 +14,15 @@ class ProductManager extends Component
     public Store $store;
     public $products;
 
+    public $productId = null;
     public $productName = '';
     public $productDescription = '';
     public $productPrice = '';
     public $productStock = '';
+    public $confirmationName = '';
 
     public function mount($storeId)
     {
-        // Make sure store belongs to current user
         $this->store = Store::where('id', $storeId)
             ->where('user_id', Auth::id())
             ->firstOrFail();
@@ -30,6 +33,12 @@ class ProductManager extends Component
     public function loadProducts()
     {
         $this->products = $this->store->products()->latest()->get();
+    }
+
+    public function openAddProductModal()
+    {
+        $this->reset(['productName', 'productDescription', 'productPrice', 'productStock', 'productId']);
+        $this->dispatch('open-product-modal');
     }
 
     public function createProduct()
@@ -48,33 +57,47 @@ class ProductManager extends Component
             'stock' => $this->productStock,
         ]);
 
-        // Reset form fields
         $this->reset(['productName', 'productDescription', 'productPrice', 'productStock']);
-
-        // Refresh list
         $this->loadProducts();
-
-        // Optional: flash message or emit event
         session()->flash('success', 'Product created successfully.');
     }
 
+    public function loadProduct_delete($id)
+    {
+        $product = Products::findOrFail($id);
+        $this->productId = $id;
+        $this->productName = $product->name;
+        $this->confirmationName = '';
+        $this->dispatch('open-delete-product-modal');
+    }
 
-    // Editing Products
+    public function deleteProduct()
+    {
+        if ($this->confirmationName !== $this->productName) {
+            $this->addError('confirmationName', 'Confirmation name does not match product name.');
+            return;
+        }
+
+        $product = Products::findOrFail($this->productId);
+        $this->dispatch('close-delete-product-modal');
+        $product->delete();
+        $this->reset(['productId', 'productName', 'confirmationName']);
+        $this->loadProducts();
+    }
+
     public function loadProduct($id)
     {
-
         $product = Products::findOrFail($id);
-
+        $this->productId = $id;
         $this->productName = $product->name;
         $this->productDescription = $product->description;
         $this->productPrice = $product->price;
         $this->productStock = $product->stock;
-
         $this->dispatch('open-edit-product-modal');
     }
 
-    public function updateProduct($id) {
-
+    public function updateProduct()
+    {
         $this->validate([
             'productName' => 'required|string|max:255',
             'productDescription' => 'nullable|string|max:1000',
@@ -82,22 +105,26 @@ class ProductManager extends Component
             'productStock' => 'required|integer|min:0',
         ]);
 
-        $product = Products::findOrFail($id);
-        $product->name = $this->productName;
-        $product->description = $this->productDescription;
-        $product->price = $this->productPrice;
-        $product->stock = $this->productStock;
-        $product->save();
+        $product = Products::findOrFail($this->productId);
+        $product->update([
+            'name' => $this->productName,
+            'description' => $this->productDescription,
+            'price' => $this->productPrice,
+            'stock' => $this->productStock,
+        ]);
 
-        $this->reset(['productName', 'productDescription', 'productPrice', 'productStock']);
+        $this->reset(['productId', 'productName', 'productDescription', 'productPrice', 'productStock']);
         $this->loadProducts();
-
     }
-
-
 
     public function render()
     {
         return view('livewire.seller.product-manager');
     }
 }
+
+
+
+
+
+
