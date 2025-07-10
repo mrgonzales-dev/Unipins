@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Seller;
 
-use App\Models\Product;
+use App\Models\Products;
 use App\Models\Store;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
@@ -57,6 +57,44 @@ class ProductManager extends Component
         // Optional: flash message or emit event
         session()->flash('success', 'Product created successfully.');
     }
+
+
+    // Editing Products
+    public function loadProduct($id)
+    {
+
+        $product = Products::findOrFail($id);
+
+        $this->productName = $product->name;
+        $this->productDescription = $product->description;
+        $this->productPrice = $product->price;
+        $this->productStock = $product->stock;
+
+        $this->dispatch('open-edit-product-modal');
+    }
+
+    public function updateProduct($id) {
+
+        $this->validate([
+            'productName' => 'required|string|max:255',
+            'productDescription' => 'nullable|string|max:1000',
+            'productPrice' => 'required|numeric|min:0',
+            'productStock' => 'required|integer|min:0',
+        ]);
+
+        $product = Products::findOrFail($id);
+        $product->name = $this->productName;
+        $product->description = $this->productDescription;
+        $product->price = $this->productPrice;
+        $product->stock = $this->productStock;
+        $product->save();
+
+        $this->reset(['productName', 'productDescription', 'productPrice', 'productStock']);
+        $this->loadProducts();
+
+    }
+
+
 
     public function render()
     {
