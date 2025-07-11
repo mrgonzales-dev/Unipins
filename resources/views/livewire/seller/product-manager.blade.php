@@ -15,6 +15,23 @@
             <a href="{{ route('seller.store-manager') }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow">
                 Go Back
             </a>
+
+            <!-- // Import Products -->
+            <button x-data wire:click="openImportProductModal"
+                class="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg shadow">
+                Import Products
+            </button>
+
+
+            <!-- // Export Products -->
+            <form wire:click=" method="POST">
+                @csrf
+                <button x-data wire:submit="exportProducts" type="submit"
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow">
+                    Export Products
+                </button>
+            </form>
+
         </div>
     </div>
 
@@ -196,6 +213,65 @@
             </form>
         </div>
     </div>
+
+
+
+
+
+
+
+    <!-- Import Modal -->
+    <div x-data="{ open: false }" x-on:open-import-product-modal.window="open = true"
+        x-on:close-import-product-modal.window="open = false" x-on:keydown.escape.window="open = false" x-show="open"
+        x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+        style="display: none;">
+        <!-- Modal Panel -->
+        <div x-transition @click.away="open = false"
+            class="w-full max-w-md h-auto max-h-[90vh] overflow-y-auto bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">
+                    Import Products
+                </h2>
+                <button @click="open = false" class="text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form wire:submit.prevent="importProducts" enctype="multipart/form-data">
+                @csrf
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Select
+                            File</label>
+                        <input type="file" name="importFile" wire:model="importFile"
+                            class="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white p-3 focus:ring-2 focus:ring-indigo-500">
+                        @error('importFile')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" @click="open = false"
+                        class="px-4 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" @click="open = false"
+                        class="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
 
 

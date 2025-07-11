@@ -8,12 +8,19 @@ use App\Models\Products;
 use App\Models\Store;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Log;
+
 
 // Spatie Media Integration
 use Livewire\WithFileUploads;
+//===========================
 
+//imports and exports
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ProductsImport;
+use App\Exports\ProductsExport;
+
+use function Livewire\Volt\js;
 
 class ProductManager extends Component
 {
@@ -22,6 +29,10 @@ class ProductManager extends Component
     public $productImages = [];
     public $newImage = [];
     //=================================
+
+    //==== Excel Import =====
+    public $importFile;
+    //=======================
 
     // ===== Livewire Modal =====
     public Store $store;
@@ -120,73 +131,94 @@ class ProductManager extends Component
     }
 
 
-public function updateProduct()
-{
-    $this->validate([
-        'productName'        => 'required|string|max:255',
-        'productDescription' => 'nullable|string|max:1000',
-        'productPrice'       => 'required|numeric|min:0',
-        'productStock'       => 'required|integer|min:0',
-        'newImage.*'         => 'nullable|image|max:2048',
-    ]);
+    public function updateProduct()
+    {
+        $this->validate([
+            'productName'        => 'required|string|max:255',
+            'productDescription' => 'nullable|string|max:1000',
+            'productPrice'       => 'required|numeric|min:0',
+            'productStock'       => 'required|integer|min:0',
+            'newImage.*'         => 'nullable|image|max:2048',
+        ]);
 
-    $product = Products::findOrFail($this->productId);
+        $product = Products::findOrFail($this->productId);
 
-    // 1️⃣ Core attributes
-    $product->update([
-        'name'        => $this->productName,
-        'description' => $this->productDescription,
-        'price'       => $this->productPrice,
-        'stock'       => $this->productStock,
-    ]);
+        // 1️⃣ Core attributes
+        $product->update([
+            'name'        => $this->productName,
+            'description' => $this->productDescription,
+            'price'       => $this->productPrice,
+            'stock'       => $this->productStock,
+        ]);
 
-    // 2️⃣ Debug: what’s in newImage?
-    Log::debug('UPDATE_PRODUCT: newImage property dump', ['newImage' => $this->newImage]);
-    session()->flash('debug', '🛠️ Uploaded files: ' . count($this->newImage));
+        // 2️⃣ Debug: what’s in newImage?
+        Log::debug('UPDATE_PRODUCT: newImage property dump', ['newImage' => $this->newImage]);
+        session()->flash('debug', '🛠️ Uploaded files: ' . count($this->newImage));
 
-    if (! empty($this->newImage)) {
-        // Debug before clearing
-        Log::debug('UPDATE_PRODUCT: clearing media collection', ['collection' => 'product_images']);
-        $product->clearMediaCollection('product_images');
+        if (! empty($this->newImage)) {
+            // Debug before clearing
+            Log::debug('UPDATE_PRODUCT: clearing media collection', ['collection' => 'product_images']);
+            $product->clearMediaCollection('product_images');
 
-        foreach ($this->newImage as $idx => $upload) {
-            try {
-                $realPath = $upload->getRealPath();
-                Log::debug("UPDATE_PRODUCT: adding #{$idx}", [
-                    'originalName' => $upload->getClientOriginalName(),
-                    'realPath'     => $realPath,
-                ]);
+            foreach ($this->newImage as $idx => $upload) {
+                try {
+                    $realPath = $upload->getRealPath();
+                    Log::debug("UPDATE_PRODUCT: adding #{$idx}", [
+                        'originalName' => $upload->getClientOriginalName(),
+                        'realPath'     => $realPath,
+                    ]);
 
-                $product
-                    ->addMedia($realPath)
-                    ->toMediaCollection('product_images');
+                    $product
+                        ->addMedia($realPath)
+                        ->toMediaCollection('product_images');
 
-            } catch (\Exception $e) {
-                // Log any errors during addMedia
-                Log::error("UPDATE_PRODUCT: failed to attach image #{$idx}", [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                ]);
-                session()->flash('error', "Failed to attach image #{$idx}: " . $e->getMessage());
+                } catch (\Exception $e) {
+                    // Log any errors during addMedia
+                    Log::error("UPDATE_PRODUCT: failed to attach image #{$idx}", [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
+                    session()->flash('error', "Failed to attach image #{$idx}: " . $e->getMessage());
+                }
             }
+            session()->flash('debug', '🛠️ Attached images: ' . count($product->getMedia('product_images')));
         }
-        session()->flash('debug', '🛠️ Attached images: ' . count($product->getMedia('product_images')));
+
+        // 3️⃣ Reset & reload
+        $this->dispatch('close-edit-product-modal');
+        $this->reset([
+            'productId',
+            'productName',
+            'productDescription',
+            'productPrice',
+            'productStock',
+            'newImage',
+        ]);
+        $this->loadProducts();
+
+        session()->flash('success', 'Product updated successfully.');
     }
 
-    // 3️⃣ Reset & reload
-    $this->dispatch('close-edit-product-modal');
-    $this->reset([
-        'productId',
-        'productName',
-        'productDescription',
-        'productPrice',
-        'productStock',
-        'newImage',
-    ]);
-    $this->loadProducts();
+    public function openImportProductModal() {
+        $this->dispatch('open-import-product-modal');
+    }
 
-    session()->flash('success', 'Product updated successfully.');
-}
+    public function importProducts() {
+
+        $this->validate([
+            'importFile' => 'required|file|mimes:xlsx,xls',
+        ]);
+
+        Excel::import(new ProductsImport, $this->importFile);
+        session()->flash('success', 'Products imported successfully.');
+        $this->loadProducts();
+    }
+
+    public function exportProducts() {
+
+        return Excel::download(new ProductsExport, 'products.xlsx');
+
+    }
 
     public function render()
     {
