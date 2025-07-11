@@ -193,9 +193,3 @@ public function updateProduct()
         return view('livewire.seller.product-manager');
     }
 }
-
-
-
-
-
-

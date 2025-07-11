@@ -1,14 +1,21 @@
 <div class="max-w-6xl mx-auto p-6 space-y-6">
 
     <!-- Header -->
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between gap-2 items-center">
         <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">
             🧺 {{ $store->name }} – Products
         </h1>
-        <button x-data wire:click="openAddProductModal"
-            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow">
-            + Add Product
-        </button>
+        <div class="flex gap-2">
+            <button x-data wire:click="openAddProductModal"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow">
+                + Add Product
+            </button>
+
+            <!-- //button to go back to store manager -->
+            <a href="{{ route('seller.store-manager') }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow">
+                Go Back
+            </a>
+        </div>
     </div>
 
     <!-- Product List -->

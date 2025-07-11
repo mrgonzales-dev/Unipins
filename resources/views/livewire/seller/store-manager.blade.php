@@ -22,7 +22,7 @@
                         class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
                         Manage
                     </a>
-                    <button wire:click="deleteStore({{ $store->id }})"
+                    <button wire:click="loadStore_delete({{ $store->id }})"
                         class="text-sm bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">
                         Delete
                     </button>
@@ -32,6 +32,54 @@
             <p class="text-gray-600 dark:text-gray-400">You don't have any stores yet.</p>
         @endforelse
     </div>
+
+
+    <!-- Delete Store Modal -->
+    <div x-data="{ open: false }" x-on:open-delete-store-modal.window="open = true"
+        x-on:close-delete-store-modal.window="open = false" x-on:keydown.escape.window="open = false" x-show="open"
+        x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+        style="display: none;">
+        <!-- Modal Panel -->
+        <div x-transition @click.away="open = false"
+            class="w-full max-w-md h-auto max-h-[90vh] overflow-y-auto bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">
+                    Are you sure you want to Delete Store?
+                </h2>
+                <button @click="open = false" class="text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form wire:submit.prevent="deleteStore" class="space-y-4">
+                <h2>Type the Name of the product to confirm.</h2>
+                <h2>Be Careful, you cannot undo this.</h2>
+                <h2>"{{ $storeName }}"</h2>
+
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Type Product
+                        Name</label>
+                    <input type="text" placeholder="{{ $storeName }}" wire:model.lazy="confirmationStoreName"
+                        class="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white p-3 focus:ring-2 focus:ring-indigo-500">
+                    @error('confirmationStoreName')
+                        <p class="text-red-500 text-sm">{{ $message }}</p>
+                    @enderror
+                    <button type="submit"
+                        class="mt-4 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg transition disabled:cursor-not-allowed">
+                        Delete Product
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
 
     <!-- Add Store Modal -->
     <div x-data="{ open: false }" x-on:open-modal.window="open = true" x-on:close-store-modal.window="open = false" x-on:keydown.escape.window="open = false"
