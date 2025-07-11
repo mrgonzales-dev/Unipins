@@ -14,7 +14,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
         <div class="flex justify-between border-b border-zinc-200 dark:border-zinc-700 pb-2">
             <span class="text-zinc-500">Email</span>
-                <span class="dark:text-white font-medium">{{ Auth::user()->email }}</span>
+            <span class="dark:text-white font-medium">{{ Auth::user()->email }}</span>
         </div>
         <div class="flex justify-between border-b border-zinc-200 dark:border-zinc-700 pb-2">
             <span class="text-zinc-500">Phone Number</span>
@@ -53,13 +53,19 @@
         <h2 class="text-2xl font-bold text-zinc-900 dark:text-white">⚙️ Seller Tools</h2>
         <div class="flex flex-wrap gap-4">
 
-            <a href="{{ route('seller.store-manager') }}" class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold">📦 View Stores </a>
+            <a href="{{ route('seller.store-manager') }}"
+                class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold">📦
+                View Stores </a>
 
-           {{-- <a href="{{ route('analytics') }}" --}}
-            <a href="" class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold"> 📊 Sales Analytics </a>
+            {{-- <a href="{{ route('analytics') }}" --}}
+            <a href=""
+                class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold">
+                📊 Sales Analytics </a>
 
             {{-- <a href="{{ route('settings') }}" --}}
-            <a href="" class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold"> ⚙️ Store Settings </a>
+            <a href=""
+                class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold">
+                ⚙️ Store Settings </a>
         </div>
     </div>
 

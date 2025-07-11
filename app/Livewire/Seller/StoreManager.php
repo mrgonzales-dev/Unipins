@@ -36,7 +36,9 @@ class StoreManager extends Component
         ]);
 
         $this->reset('name', 'description');
-
+        $this->dispatch('close-store-modal');
+        //load stores
+        $this->ownedStores = Auth::user()->ownedStores()->get();
         session()->flash('success', 'Store created successfully.');
     }
 

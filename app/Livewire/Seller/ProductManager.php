@@ -9,6 +9,8 @@ use App\Models\Store;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Log;
+
 // Spatie Media Integration
 use Livewire\WithFileUploads;
 
@@ -18,10 +20,12 @@ class ProductManager extends Component
     // ===== SPATIE Media Uploads=====
     use WithFileUploads;
     public $productImages = [];
+    public $newImage = [];
     //=================================
 
     // ===== Livewire Modal =====
     public Store $store;
+    public $current_image = null;
     public $products;
     public $productId = null;
     public $productName = '';
@@ -106,6 +110,7 @@ class ProductManager extends Component
     public function loadProduct($id)
     {
         $product = Products::findOrFail($id);
+        $this->current_image = $product->getFirstMediaUrl('product_images');
         $this->productId = $id;
         $this->productName = $product->name;
         $this->productDescription = $product->description;
@@ -114,26 +119,74 @@ class ProductManager extends Component
         $this->dispatch('open-edit-product-modal');
     }
 
-    public function updateProduct()
-    {
-        $this->validate([
-            'productName' => 'required|string|max:255',
-            'productDescription' => 'nullable|string|max:1000',
-            'productPrice' => 'required|numeric|min:0',
-            'productStock' => 'required|integer|min:0',
-        ]);
 
-        $product = Products::findOrFail($this->productId);
-        $product->update([
-            'name' => $this->productName,
-            'description' => $this->productDescription,
-            'price' => $this->productPrice,
-            'stock' => $this->productStock,
-        ]);
+public function updateProduct()
+{
+    $this->validate([
+        'productName'        => 'required|string|max:255',
+        'productDescription' => 'nullable|string|max:1000',
+        'productPrice'       => 'required|numeric|min:0',
+        'productStock'       => 'required|integer|min:0',
+        'newImage.*'         => 'nullable|image|max:2048',
+    ]);
 
-        $this->reset(['productId', 'productName', 'productDescription', 'productPrice', 'productStock']);
-        $this->loadProducts();
+    $product = Products::findOrFail($this->productId);
+
+    // 1️⃣ Core attributes
+    $product->update([
+        'name'        => $this->productName,
+        'description' => $this->productDescription,
+        'price'       => $this->productPrice,
+        'stock'       => $this->productStock,
+    ]);
+
+    // 2️⃣ Debug: what’s in newImage?
+    Log::debug('UPDATE_PRODUCT: newImage property dump', ['newImage' => $this->newImage]);
+    session()->flash('debug', '🛠️ Uploaded files: ' . count($this->newImage));
+
+    if (! empty($this->newImage)) {
+        // Debug before clearing
+        Log::debug('UPDATE_PRODUCT: clearing media collection', ['collection' => 'product_images']);
+        $product->clearMediaCollection('product_images');
+
+        foreach ($this->newImage as $idx => $upload) {
+            try {
+                $realPath = $upload->getRealPath();
+                Log::debug("UPDATE_PRODUCT: adding #{$idx}", [
+                    'originalName' => $upload->getClientOriginalName(),
+                    'realPath'     => $realPath,
+                ]);
+
+                $product
+                    ->addMedia($realPath)
+                    ->toMediaCollection('product_images');
+
+            } catch (\Exception $e) {
+                // Log any errors during addMedia
+                Log::error("UPDATE_PRODUCT: failed to attach image #{$idx}", [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+                session()->flash('error', "Failed to attach image #{$idx}: " . $e->getMessage());
+            }
+        }
+        session()->flash('debug', '🛠️ Attached images: ' . count($product->getMedia('product_images')));
     }
+
+    // 3️⃣ Reset & reload
+    $this->dispatch('close-edit-product-modal');
+    $this->reset([
+        'productId',
+        'productName',
+        'productDescription',
+        'productPrice',
+        'productStock',
+        'newImage',
+    ]);
+    $this->loadProducts();
+
+    session()->flash('success', 'Product updated successfully.');
+}
 
     public function render()
     {
