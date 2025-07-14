@@ -9,19 +9,20 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class ProductsImport implements ToModel, withHeadingRow
+class ProductsImport implements ToModel, WithHeadingRow
 {
+
+    protected $storeId;
+
+    public function __construct($storeId)
+    {
+        $this->storeId = $storeId;
+    }
 
     public function model(array $row)
     {
-        $ownedStore = User::find(Auth::id())->ownedStores()->first();
-
-        if (!$ownedStore) {
-            return null;
-        }
-
         return new Products([
-            'store_id' => $ownedStore->id,
+            'store_id' => $this->storeId,
             'name' => $row['name'],
             'description' => $row['description'],
             'price' => $row['price'],

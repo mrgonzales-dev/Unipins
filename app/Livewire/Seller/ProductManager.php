@@ -209,7 +209,7 @@ class ProductManager extends Component
             'importFile' => 'required|file|mimes:xlsx,xls',
         ]);
 
-        Excel::import(new ProductsImport, $this->importFile);
+        Excel::import(new ProductsImport($this->store->id), $this->importFile);
         session()->flash('success', 'Products imported successfully.');
         $this->loadProducts();
     }

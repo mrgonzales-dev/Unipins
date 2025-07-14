@@ -25,10 +25,10 @@ class ProductsExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'Name',
-            'Description',
-            'Price',
-            'Stock',
+            'name',
+            'description',
+            'price',
+            'stock',
         ];
     }
 }

@@ -81,6 +81,7 @@
                 <h2 class="text-xl font-bold text-zinc-900 dark:text-white">
                     Are you sure you want to Delete Product?
                 </h2>
+
                 <button @click="open = false" class="text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -209,12 +210,6 @@
             </form>
         </div>
     </div>
-
-
-
-
-
-
 
     <!-- Import Modal -->
     <div x-data="{ open: false }" x-on:open-import-product-modal.window="open = true"
