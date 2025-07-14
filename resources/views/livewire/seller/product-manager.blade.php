@@ -11,10 +11,6 @@
                 + Add Product
             </button>
 
-            <!-- //button to go back to store manager -->
-            <a href="{{ route('seller.store-manager') }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow">
-                Go Back
-            </a>
 
             <!-- // Import Products -->
             <button x-data wire:click="openImportProductModal"
@@ -22,12 +18,16 @@
                 Import Products
             </button>
 
-
             <!-- // Export Products -->
-<button wire:click="exportProducts"
-    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow">
-    Export Products
-</button>
+            <button wire:click="exportProducts"
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow">
+                Export Products
+            </button>
+
+            <!-- //button to go back to store manager -->
+            <a href="{{ route('seller.store-manager') }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow">
+                Go Back
+            </a>
         </div>
     </div>
 

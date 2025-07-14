@@ -53,17 +53,27 @@
         <h2 class="text-2xl font-bold text-zinc-900 dark:text-white">⚙️ Seller Tools</h2>
         <div class="flex flex-wrap gap-4">
 
+            <!-- Store Manager -->
             <a href="{{ route('seller.store-manager') }}"
                 class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold">📦
                 View Stores </a>
 
-            {{-- <a href="{{ route('analytics') }}" --}}
-            <a href=""
+
+            <!-- NOTE: TO BE DONE -->
+            <!-- Analytics -->
+            <a href="@@{{ route('analytics') }}"
                 class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold">
                 📊 Sales Analytics </a>
 
-            {{-- <a href="{{ route('settings') }}" --}}
-            <a href=""
+            <!-- NOTE: TO BE DONE -->
+            <!-- Transaction/payment ways -->
+            <a href="@@{{ route('seller.payment-ways') }}"
+                class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold">💰
+                Payment Ways </a>
+
+            <!-- NOTE: TO BE DONE -->
+            <!-- Store Settings -->
+            <a href="@@{{ route('settings') }}"
                 class="px-5 py-3 bg-zinc-200 dark:bg-zinc-700 rounded-xl hover:bg-zinc-300 dark:hover:bg-zinc-600 transition font-semibold">
                 ⚙️ Store Settings </a>
         </div>
