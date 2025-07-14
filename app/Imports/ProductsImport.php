@@ -21,6 +21,16 @@ class ProductsImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
+ // Skip rows with missing required fields
+        if (
+            empty($row['name']) ||
+            empty($row['description']) ||
+            !isset($row['price']) ||
+            !isset($row['stock'])
+        ) {
+            return null;
+        }
+
         return new Products([
             'store_id' => $this->storeId,
             'name' => $row['name'],
