@@ -215,10 +215,10 @@ class ProductManager extends Component
     }
 
     public function exportProducts() {
-
-        return Excel::download(new ProductsExport, 'products.xlsx');
-
+        //export specific products from store
+        return Excel::download(new ProductsExport($this->store->id), "{$this->store->name}_products.xlsx");
     }
+
 
     public function render()
     {
