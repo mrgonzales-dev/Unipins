@@ -22,6 +22,10 @@
                         class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
                         Manage
                     </a>
+                    <a href="{{ route('seller.product-manager', $store->id) }}"
+                        class="text-sm bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded">
+                        Settings
+                    </a>
                     <button wire:click="loadStore_delete({{ $store->id }})"
                         class="text-sm bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">
                         Delete
