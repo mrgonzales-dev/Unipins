@@ -219,7 +219,6 @@ class ProductManager extends Component
         return Excel::download(new ProductsExport($this->store->id), "{$this->store->name}_products.xlsx");
     }
 
-
     public function render()
     {
         return view('livewire.seller.product-manager');
