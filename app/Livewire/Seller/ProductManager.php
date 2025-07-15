@@ -85,9 +85,7 @@ class ProductManager extends Component
 
         // Attach product images
         foreach ($this->productImages as $image) {
-
             $product->addMedia($image)->toMediaCollection('product_images');
-
         }
 
         $this->reset(['productName', 'productDescription', 'productPrice', 'productStock']);
