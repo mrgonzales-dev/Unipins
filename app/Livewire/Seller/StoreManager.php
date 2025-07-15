@@ -69,6 +69,11 @@ class StoreManager extends Component
 
         $store = Store::findOrFail($this->storeId);
         $this->dispatch('close-delete-store-modal');
+
+        //Ensures that the store has no products or media left
+        foreach($store->products as $product) {
+            $product->delete();
+        }
         $store->delete();
         $this->reset(['storeId', 'storeName', 'confirmationStoreName']);
         $this->ownedStores = Auth::user()->ownedStores()->get();
