@@ -36,7 +36,7 @@ class ProductManager extends Component
 
     // ===== Livewire Modal =====
     public Store $store;
-    public $current_image = null;
+    public $current_image = [];
     public $products;
     public $productId = null;
     public $productName = '';
@@ -119,7 +119,7 @@ class ProductManager extends Component
     public function loadProduct($id)
     {
         $product = Products::findOrFail($id);
-        $this->current_image = $product->getFirstMediaUrl('product_images');
+        $this->current_image = $product->getMedia('product_images');
         $this->productId = $id;
         $this->productName = $product->name;
         $this->productDescription = $product->description;

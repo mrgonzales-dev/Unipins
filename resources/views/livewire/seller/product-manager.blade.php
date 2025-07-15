@@ -190,7 +190,8 @@
                 <div x-data="{ currentSlide: 0 }" class="relative w-full max-w-xl mx-auto">
                     <!-- Slides -->
                     <div class="relative overflow-hidden rounded-xl">
-                        @foreach ($product->getMedia('product_images') as $index => $image)
+                        {{-- @foreach ($product->getMedia('product_images') as $index => $image) --}}
+                        @foreach ($current_image as $index => $image)
                             <img
                                 x-show="currentSlide === {{ $index }}"
                                 src="{{ $image->getUrl() }}"
@@ -207,13 +208,13 @@
                     <div class="absolute inset-0 flex justify-between items-center px-4">
                         <a
                             class="bg-black/50 text-white p-2 rounded-full"
-                            @click="currentSlide = (currentSlide === 0) ? {{ $product->getMedia('product_images')->count() - 1 }} : currentSlide - 1"
+                            @click="currentSlide = (currentSlide === 0) ? {{ count($current_image) - 1 }} : currentSlide - 1"
                         >
                             ‹
                         </a>
                         <a
                             class="bg-black/50 text-white p-2 rounded-full"
-                            @click="currentSlide = (currentSlide === {{ $product->getMedia('product_images')->count() - 1 }}) ? 0 : currentSlide + 1"
+                            @click="currentSlide = (currentSlide === {{ count($current_image) - 1 }}) ? 0 : currentSlide + 1"
                         >
                             ›
                         </a>
@@ -221,7 +222,7 @@
 
                     <!-- Dots -->
                     <div class="flex justify-center mt-2 space-x-2">
-                        @foreach ($product->getMedia('product_images') as $index => $image)
+                        @foreach ($current_image as $index => $image)
                             <button
                                 class="w-3 h-3 rounded-full"
                                 :class="{ 'bg-blue-600': currentSlide === {{ $index }}, 'bg-gray-400': currentSlide !== {{ $index }} }"
