@@ -245,8 +245,10 @@
                     class="px-4 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
                     Close
                 </button>
-                <button class="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
-                    Edit Product
+                <button
+                wire:click="loadProduct({{$productId}})"
+                class="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
+                  Edit Product
                 </button>
             </div>
         </div>
