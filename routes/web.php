@@ -36,9 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('seller/dashboard', sellerDashboard::class)->middleware(['role:seller'])->name('seller.dashboard');
 
     // Product Catalogue
-    Route::get('seller/product-catalogue', ProductCatalogue::class)->middleware(['role:seller'])->name('seller.product-catalogue');
     Route::get('buyer/product-catalogue', buyerProductCatalogue::class)->middleware(['role:buyer'])->name('buyer.product-catalogue');
-
     //Store Manager
     Route::get('seller/store-manager', StoreManager::class)->middleware(['role:seller'])->name('seller.store-manager');
 

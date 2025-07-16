@@ -46,8 +46,8 @@
             {{-- UniShop (product catalogue) --}}
             @if ($role == 'buyer')
                 <flux:navlist.group :heading="__('UniShop')" class="grid">
-                    <flux:navlist.item icon="folder-git-2" :href="route('seller.product-catalogue')"
-                        :current="request()-> routeIs('product.index')" wire:navigate>{{ __('Product Catalogue') }}
+                    <flux:navlist.item icon="folder-git-2" :href="route('buyer.product-catalogue')"
+                        :current="request()-> routeIs('buyer.product-catalogue')" wire:navigate>{{ __('Product Catalog') }}
                     </flux:navlist.item>
                 </flux:navlist.group>
             @elseif ($role == 'seller')
