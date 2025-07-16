@@ -145,45 +145,16 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 
                 <!-- Image V-Carousel -->
-
-                    {{-- <!-- Controls --> --}}
-                    {{-- @if (count($current_image) > 1) --}}
-                    {{--     <div class="absolute inset-0 flex justify-between items-center px-4"> --}}
-                    {{--         <a --}}
-                    {{--             class="bg-black/50 text-white p-2 rounded-full" --}}
-                    {{--             @click="currentSlide = (currentSlide === 0) ? {{ count($current_image) - 1 }} : currentSlide - 1" --}}
-                    {{--         > --}}
-                    {{--             ‹ --}}
-                    {{--         </a> --}}
-                    {{--         <a --}}
-                    {{--             class="bg-black/50 text-white p-2 rounded-full" --}}
-                    {{--             @click="currentSlide = (currentSlide === {{ count($current_image) - 1 }}) ? 0 : currentSlide + 1" --}}
-                    {{--         > --}}
-                    {{--             › --}}
-                    {{--         </a> --}}
-                    {{--     </div> --}}
-                    {{-- @endif --}}
-                    {{-- <!-- Dots --> --}}
-                    {{-- <div class="flex justify-center mt-2 space-x-2"> --}}
-                    {{--     @foreach ($current_image as $index => $image) --}}
-                    {{--         <button --}}
-                    {{--             class="w-3 h-3 rounded-full" --}}
-                    {{--             :class="{ 'bg-blue-600': currentSlide === {{ $index }}, 'bg-gray-400': currentSlide !== {{ $index }} }" --}}
-                    {{--             @click="currentSlide = {{ $index }}"> --}}
-                    {{--         </button> --}}
-                    {{--     @endforeach --}}
-                    {{-- </div> --}}
-
                 <div class="relative w-full h-full" x-data="{ currentSlide: 0 }">
                     <div class="relative overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-700">
-                @foreach ($current_image as $index => $image)
-                        <img x-show="currentSlide === {{ $index }}"
-                                src="{{ $image->getUrl() }}"
-                                class="w-full h-96 object-cover transition-all duration-500 ease-in-out"
-                                x-transition:enter="transition ease-out duration-300"
-                                x-transition:enter-start="opacity-0 transform scale-95"
-                                x-transition:enter-end="opacity-100 transform scale-100" />
-                @endforeach
+                    @foreach ($current_image as $index => $image)
+                            <img x-show="currentSlide === {{ $index }}"
+                                    src="{{ $image->getUrl() }}"
+                                    class="w-full h-96 object-cover transition-all duration-500 ease-in-out"
+                                    x-transition:enter="transition ease-out duration-300"
+                                    x-transition:enter-start="opacity-0 transform scale-95"
+                                    x-transition:enter-end="opacity-100 transform scale-100" />
+                    @endforeach
                 </div>
 
                     <!-- Controls -->
@@ -191,11 +162,12 @@
                     <template x-if="[1, 2, 3].length > 1">
                         <div class="absolute inset-0 flex justify-between items-center px-4">
                             <button class="bg-black/50 text-white p-2 rounded-full"
-                                @click="currentSlide = (currentSlide === 0) ? 2 : currentSlide - 1">
+                                @click="currentSlide = (currentSlide === 0) ? {{ count($current_image) - 1 }} : currentSlide - 1">
                                 ‹
                             </button>
+
                             <button class="bg-black/50 text-white p-2 rounded-full"
-                                @click="currentSlide = (currentSlide === 2) ? 0 : currentSlide + 1">
+                                @click="currentSlide = (currentSlide === {{ count($current_image) - 1 }}) ? 0 : currentSlide + 1">
                                 ›
                             </button>
                         </div>
