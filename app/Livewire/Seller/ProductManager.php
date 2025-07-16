@@ -46,6 +46,8 @@ class ProductManager extends Component
     public $confirmationName = '';
     // ===========================
 
+
+
     public function mount($storeId)
     {
         $this->store = Store::where('id', $storeId)
@@ -54,6 +56,8 @@ class ProductManager extends Component
 
         $this->loadProducts();
     }
+
+
 
     public function loadProducts()
     {
@@ -116,8 +120,22 @@ class ProductManager extends Component
         $this->loadProducts();
     }
 
+
+    public function loadViewProduct($id)
+    {
+        $product = Products::findOrFail($id);
+        $this->current_image = $product->getMedia('product_images');
+        $this->productId = $id;
+        $this->productName = $product->name;
+        $this->productDescription = $product->description;
+        $this->productPrice = $product->price;
+        $this->productStock = $product->stock;
+        $this->dispatch('open-view-product-modal');
+    }
+
     public function loadProduct($id)
     {
+
         $product = Products::findOrFail($id);
         $this->current_image = $product->getMedia('product_images');
         $this->productId = $id;
