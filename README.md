@@ -28,7 +28,7 @@ Everything is tracked, seamless, and reliable. No more messy transactions. 🚀
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/your-username/unipins.git
+git clone https://github.com/mrgonzales-dev/Unipins.git
 cd unipins
 cp .env.example .env
 composer install
