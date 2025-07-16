@@ -53,23 +53,23 @@
                                 >
                             @endforeach
                         </div>
-
-                        <!-- Controls -->
-                        <div class="absolute inset-0 flex justify-between items-center px-4">
-                            <button
-                                class="bg-black/50 text-white p-2 rounded-full"
-                                @click="currentSlide = (currentSlide === 0) ? {{ $product->getMedia('product_images')->count() - 1 }} : currentSlide - 1"
-                            >
-                                ‹
-                            </button>
-                            <button
-                                class="bg-black/50 text-white p-2 rounded-full"
-                                @click="currentSlide = (currentSlide === {{ $product->getMedia('product_images')->count() - 1 }}) ? 0 : currentSlide + 1"
-                            >
-                                ›
-                            </button>
-                        </div>
-
+                       @if ($product->getMedia('product_images')->count() > 1)
+                            <!-- Controls -->
+                            <div class="absolute inset-0 flex justify-between items-center px-4">
+                                <button
+                                    class="bg-black/50 text-white p-2 rounded-full"
+                                    @click="currentSlide = (currentSlide === 0) ? {{ $product->getMedia('product_images')->count() - 1 }} : currentSlide - 1"
+                                >
+                                    ‹
+                                </button>
+                                <button
+                                    class="bg-black/50 text-white p-2 rounded-full"
+                                    @click="currentSlide = (currentSlide === {{ $product->getMedia('product_images')->count() - 1 }}) ? 0 : currentSlide + 1"
+                                >
+                                    ›
+                                </button>
+                            </div>
+                        @endif
                         <!-- Dots -->
                         <div class="flex justify-center mt-2 space-x-2">
                             @foreach ($product->getMedia('product_images') as $index => $image)
@@ -203,23 +203,23 @@
                             >
                         @endforeach
                     </div>
-
                     <!-- Controls -->
-                    <div class="absolute inset-0 flex justify-between items-center px-4">
-                        <a
-                            class="bg-black/50 text-white p-2 rounded-full"
-                            @click="currentSlide = (currentSlide === 0) ? {{ count($current_image) - 1 }} : currentSlide - 1"
-                        >
-                            ‹
-                        </a>
-                        <a
-                            class="bg-black/50 text-white p-2 rounded-full"
-                            @click="currentSlide = (currentSlide === {{ count($current_image) - 1 }}) ? 0 : currentSlide + 1"
-                        >
-                            ›
-                        </a>
-                    </div>
-
+                    @if (count($current_image) > 1)
+                        <div class="absolute inset-0 flex justify-between items-center px-4">
+                            <a
+                                class="bg-black/50 text-white p-2 rounded-full"
+                                @click="currentSlide = (currentSlide === 0) ? {{ count($current_image) - 1 }} : currentSlide - 1"
+                            >
+                                ‹
+                            </a>
+                            <a
+                                class="bg-black/50 text-white p-2 rounded-full"
+                                @click="currentSlide = (currentSlide === {{ count($current_image) - 1 }}) ? 0 : currentSlide + 1"
+                            >
+                                ›
+                            </a>
+                        </div>
+                    @endif
                     <!-- Dots -->
                     <div class="flex justify-center mt-2 space-x-2">
                         @foreach ($current_image as $index => $image)
