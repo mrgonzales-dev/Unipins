@@ -19,7 +19,7 @@ use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductsImport;
 use App\Exports\ProductsExport;
-
+use Illuminate\Support\Facades\Cache;
 use function Livewire\Volt\js;
 
 class ProductManager extends Component
@@ -61,7 +61,9 @@ class ProductManager extends Component
 
     public function loadProducts()
     {
-        $this->products = $this->store->products()->latest()->get();
+        $this->products =  Cache::remember('products', 10, function () {
+            return $this->store->products()->with('media')->get();
+        });
     }
 
     public function openAddProductModal()
@@ -200,7 +202,7 @@ class ProductManager extends Component
             session()->flash('debug', '🛠️ Attached images: ' . count($product->getMedia('product_images')));
         }
 
-        // 3️⃣ Reset & reload
+        //  Reset & reload
         $this->dispatch('close-edit-product-modal');
         $this->reset([
             'productId',

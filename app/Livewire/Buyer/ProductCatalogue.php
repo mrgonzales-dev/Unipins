@@ -5,7 +5,7 @@ namespace App\Livewire\Buyer;
 use Livewire\Component;
 use App\Models\Products;
 use App\Models\Store;
-
+use Illuminate\Support\Facades\Cache;
 
 class ProductCatalogue extends Component
 {
@@ -26,7 +26,6 @@ class ProductCatalogue extends Component
 
     //load all products
     public function mount() {
-        $this->products = Products::with('media')->latest()->get();
         $this->loadProducts();
     }
 
@@ -35,11 +34,10 @@ class ProductCatalogue extends Component
     }
 
     public function loadProducts() {
-        $q = Products::with('media')
-            ->when($this->store, fn ($query) => $query->where('store_id', $this->store->id))
-            ->when($this->query !== '', fn ($query) => $query->where('name', 'like', "%{$this->query}%"))
-            ->latest();
-        $this->products = $q->get();
+        $this->products =  Cache::remember('products', 10, function () {
+            return Products::with(['store','media'])->latest()->get();
+
+        });
     }
 
     public function loadViewProduct($id): void {
