@@ -49,7 +49,16 @@ class ProductCatalogue extends Component
         $this->productDescription   = $product->description;
         $this->productStock         = $product->stock;
         $this->productPrice         = $product->price;
+        $this->dispatch('open-view-product-modal');
+    }
 
+    public function loadSingleProductView($id): void {
+        $product = Products::findOrFail($id);
+        $this->current_image        = $product->getMedia('product_images');
+        $this->productName          = $product->name;
+        $this->productDescription   = $product->description;
+        $this->productStock         = $product->stock;
+        $this->productPrice         = $product->price;
         $this->dispatch('open-view-product-modal');
     }
 
