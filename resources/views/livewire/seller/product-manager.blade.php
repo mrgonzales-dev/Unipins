@@ -106,7 +106,7 @@
                                 View Product
                             </button>
 
-                            <button wire:click="loadProduct({{ $product->id }})"
+                            <button wire:click="editProduct({{ $product->id }})"
                                 class="text-sm text-zinc-500 hover:underline">Edit</button>
                             <button wire:click="loadProduct_delete({{ $product->id }})"
                                 class="text-sm text-red-500 hover:underline">Delete</button>
@@ -226,7 +226,7 @@
                     Close
                 </button>
                 <button
-                wire:click="loadProduct({{$productId}})"
+                wire:click="editProduct({{$productId}})"
                 class="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
                   Edit Product
                 </button>
@@ -309,7 +309,6 @@
                 <div x-data="{ currentSlide: 0 }" class="relative w-full max-w-xl mx-auto">
                     <!-- Slides -->
                     <div class="relative overflow-hidden rounded-xl">
-                        {{-- @foreach ($product->getMedia('product_images') as $index => $image) --}}
                         @foreach ($current_image as $index => $image)
                             <img
                                 x-show="currentSlide === {{ $index }}"
@@ -403,6 +402,55 @@
                     </div>
                 </div>
 
+
+                <!-- Options -->
+                @foreach ($options as $optionIndex => $option)
+                <div class="space-y-2 border border-zinc-200 dark:border-zinc-700 p-4 rounded-lg">
+                    <!-- Option Name -->
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Option Name</label>
+                        <input type="text" wire:model="options.{{ $optionIndex }}.name" placeholder="e.g. Color, Size"
+                            class="w-full mt-1 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white p-2">
+                        @error("options.$optionIndex.name")
+                            <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <!-- Option Type -->
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Input Type</label>
+                        <select wire:model="options.{{ $optionIndex }}.type"
+                            class="w-full mt-1 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white p-2">
+                            <option value="select">Select</option>
+                            <option value="radio">Radio</option>
+                        </select>
+                        @error("options.$optionIndex.type")
+                            <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Option Values -->
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Option Values</label>
+                        @foreach ($option['values'] as $valueIndex => $value)
+                            <input type="text" wire:model="options.{{ $optionIndex }}.values.{{ $valueIndex }}.value"
+                                class="w-full mb-2 p-2 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600"
+                                placeholder="e.g. Red">
+                        {{-- Add Value --}}
+                        <button wire:click="addOptionValue({{ $optionIndex }})" type="button" class="text-blue-600 hover:underline">
+                            + Add Value
+                        </button>
+
+                        <!-- Delete Value -->
+                        <button wire:click="removeOptionValue({{ $optionIndex }}, {{ $valueIndex }})" type="button" class="text-red-600 hover:underline">
+                            - Remove Value
+                        </button>
+                        @endforeach
+
+                    </div>
+                </div>
+                @endforeach
+
+
                 <!-- Actions -->
                 <div class="flex justify-end gap-3 pt-4">
                     <button type="button" @click="open = false"
@@ -494,6 +542,7 @@
 
             <!-- Form -->
             <form wire:submit.prevent="createProduct" class="space-y-4">
+
                 <!-- Image -->
                 <div>
                     <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Product

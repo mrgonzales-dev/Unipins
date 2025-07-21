@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace App\Livewire\Seller;
 
 use App\Models\Product;
@@ -50,6 +48,7 @@ class ProductManager extends Component
     // ==== Product Variant Modal =====
     public $options = [];
 
+
     public function addOption() {
         $this->options[] = [
             'name' => '',
@@ -57,7 +56,6 @@ class ProductManager extends Component
             'values' => []
         ];
     }
-
     public function addOptionValue($optionIndex) {
 
         $this->options[$optionIndex]['values'][] = [
@@ -66,7 +64,20 @@ class ProductManager extends Component
         ];
 
     }
+    //DELETE OPTION
+    public function removeOptionValue($optionIndex, $valueIndex) {
+        $values = $this->options[$optionIndex]['values'];
 
+        // Normalize to array if it's a Collection
+        if ($values instanceof \Illuminate\Support\Collection) {
+            $values = $values->toArray();
+        }
+
+        unset($values[$valueIndex]);
+
+        // Reindex array after unset
+        $this->options[$optionIndex]['values'] = array_values($values);
+    }
     //==================================
 
     //====== Product Deletion MODAL ======
@@ -74,25 +85,33 @@ class ProductManager extends Component
     //====================================
 
 
-    public function mount($storeId)
+    // ======= Product Fetcher =========
+    public function fetchProduct($id)
     {
-        $this->store = Store::where('id', $storeId)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
-
-        $this->loadProducts();
+        return Product::with(['media', 'options', 'options.values'])->findOrFail($id);
     }
 
+    // ================================
 
-
+    // ======= Product Loader =========
     public function loadProducts()
     {
-        $this->products =  Cache::remember('products', 10, function () {
+        $this->products =  Cache::remember("products_store_{$this->store->id}", 10, function () {
             return $this->store->products()->with([
                 'media',
                 'options.values',
             ])->get();
         });
+    }
+    //==================================
+
+
+    public function mount($storeId)
+    {
+        $this->store = Store::where('id', $storeId)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+        $this->loadProducts();
     }
 
     public function openAddProductModal()
@@ -139,7 +158,6 @@ class ProductManager extends Component
             }
         }
 
-
         // Attach product images
         foreach ($this->productImages as $image) {
             $product->addMedia($image)->toMediaCollection('product_images');
@@ -152,7 +170,7 @@ class ProductManager extends Component
 
     public function loadProduct_delete($id)
     {
-        $product = Product::findOrFail($id);
+        $product = $this->fetchProduct($id);
         $this->productId = $id;
         $this->productName = $product->name;
         $this->confirmationName = '';
@@ -166,7 +184,7 @@ class ProductManager extends Component
             return;
         }
 
-        $product = Product::findOrFail($this->productId);
+        $product = $this->fetchProduct($this->productId);
         $this->dispatch('close-delete-product-modal');
         $product->delete();
         $this->reset(['productId', 'productName', 'confirmationName']);
@@ -174,70 +192,35 @@ class ProductManager extends Component
     }
 
 
-    public function loadViewProduct($id)
-    {
-        $product = Product::with(['options', 'options.values'])->findOrFail($id);
 
-        $this->current_image = $product->getMedia('product_images');
+    //  ===== Edit Modal ======
+    public function editProduct($id)
+    {
+        $product = $this->fetchProduct($id);
+
         $this->productId = $id;
         $this->productName = $product->name;
         $this->productDescription = $product->description;
         $this->productPrice = $product->price;
         $this->productStock = $product->stock;
+        $this->current_image = $product->media;
 
-        // load existing options and values for the product
-        $this->options = [];
-        foreach ($product->options as $option) {
-            $optionValues = [];
-            foreach ($option->values as $value) {
-                $optionValues[] = [
-                    'value' => $value->value,
-                    'price_adjustment' => $value->price_adjustment,
-                ];
-            }
-            $this->options[] = [
+        $this->options = $product->options->map(function ($option) {
+            return [
                 'name' => $option->name,
                 'type' => $option->type,
-                'values' => $optionValues,
+                'values' => $option->values->map(function ($value) {
+                    return [
+                        'value' => $value->value,
+                        'price_adjustment' => $value->price_adjustment,
+                    ];
+                }),
             ];
-        }
+        })->toArray();
 
-
-        $this->dispatch('open-view-product-modal');
-    }
-
-    public function loadProduct($id)
-    {
-
-        $product = Product::with(['options', 'options.values'])->findOrFail($id);
-        $this->current_image = $product->getMedia('product_images');
-        $this->productId = $id;
-        $this->productName = $product->name;
-        $this->productDescription = $product->description;
-        $this->productPrice = $product->price;
-        $this->productStock = $product->stock;
-
-
-        // load existing options and values for the product
-        $this->options = [];
-        foreach ($product->options as $option) {
-            $optionValues = [];
-            foreach ($option->values as $value) {
-                $optionValues[] = [
-                    'value' => $value->value,
-                    'price_adjustment' => $value->price_adjustment,
-                ];
-            }
-            $this->options[] = [
-                'name' => $option->name,
-                'type' => $option->type,
-                'values' => $optionValues,
-            ];
-        }
 
         $this->dispatch('open-edit-product-modal');
     }
-
 
     public function updateProduct()
     {
@@ -257,8 +240,12 @@ class ProductManager extends Component
 
         ]);
 
-
         $product = Product::findOrFail($this->productId);
+
+        // Attach product images
+        foreach ($this->newImage as $image) {
+            $product->addMedia($image)->toMediaCollection('product_images');
+        }
 
         // update the product
         $product->update([
@@ -284,7 +271,46 @@ class ProductManager extends Component
                 ]);
             }
         }
+
+
+        $this->reset(['productId', 'productName', 'productDescription', 'productPrice', 'productStock', 'options']);
+        $this->loadProducts();
+        session()->flash('success', 'Product updated successfully.');
+
     }
+
+    // =============================================================
+
+
+    public function loadViewProduct($id) {
+
+        $product = $this->fetchProduct($id);
+        $this->productName = $product->name;
+        $this->productDescription = $product->description;
+        $this->productPrice = $product->price;
+        $this->productStock = $product->stock;
+        $this->current_image = $product->media;
+
+        $this->options = $product->options->map(function ($option) {
+            return [
+                'name' => $option->name,
+                'type' => $option->type,
+                'values' => $option->values->map(function ($value) {
+                    return [
+                        'value' => $value->value,
+                        'price_adjustment' => $value->price_adjustment,
+                    ];
+                }),
+            ];
+        })->toArray();
+
+        $this->dispatch('open-view-product-modal');
+
+    }
+
+
+    // ====== import and export functions ======
+
 
     public function openImportProductModal() {
         $this->dispatch('open-import-product-modal');
