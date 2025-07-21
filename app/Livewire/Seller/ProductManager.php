@@ -4,7 +4,7 @@
 
 namespace App\Livewire\Seller;
 
-use App\Models\Products;
+use App\Models\Product;
 use App\Models\Store;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
@@ -20,10 +20,14 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductsImport;
 use App\Exports\ProductsExport;
 use Illuminate\Support\Facades\Cache;
-use function Livewire\Volt\js;
 
 class ProductManager extends Component
 {
+    // ===== Main Variables =====
+    public Store $store;
+    public $products;
+    //===========================
+
     // ===== SPATIE Media Uploads=====
     use WithFileUploads;
     public $productImages = [];
@@ -34,18 +38,40 @@ class ProductManager extends Component
     public $importFile;
     //=======================
 
-    // ===== Livewire Modal =====
-    public Store $store;
+    // ===== Product Modal ======
     public $current_image = [];
-    public $products;
     public $productId = null;
     public $productName = '';
     public $productDescription = '';
     public $productPrice = '';
     public $productStock = '';
-    public $confirmationName = '';
     // ===========================
 
+    // ==== Product Variant Modal =====
+    public $options = [];
+
+    public function addOption() {
+        $this->options[] = [
+            'name' => '',
+            'type' => 'select',
+            'values' => []
+        ];
+    }
+
+    public function addOptionValue($optionIndex) {
+
+        $this->options[$optionIndex]['values'][] = [
+            'value' => '',
+            'price_adjustment' => 0
+        ];
+
+    }
+
+    //==================================
+
+    //====== Product Deletion MODAL ======
+    public $confirmationName = '';
+    //====================================
 
 
     public function mount($storeId)
@@ -62,7 +88,10 @@ class ProductManager extends Component
     public function loadProducts()
     {
         $this->products =  Cache::remember('products', 10, function () {
-            return $this->store->products()->with('media')->get();
+            return $this->store->products()->with([
+                'media',
+                'options.values',
+            ])->get();
         });
     }
 
@@ -80,8 +109,14 @@ class ProductManager extends Component
             'productPrice' => 'required|numeric|min:0',
             'productStock' => 'required|integer|min:0',
             'productImages.*' => 'image|max:2048', // 2MB
+            // options
+            'options.*.name' => 'required|string|max:255',
+            'options.*.type' => 'required|in:select,radio',
+            'options.*.values.*.value' => 'required|string|max:255',
+            'options.*.values.*.price_adjustment' => 'required|numeric|min:0',
         ]);
 
+        // create product
         $product = $this->store->products()->create([
             'name' => $this->productName,
             'description' => $this->productDescription,
@@ -89,19 +124,35 @@ class ProductManager extends Component
             'stock' => $this->productStock,
         ]);
 
+        // create product options
+        foreach ($this->options as $option) {
+            $productOption = $product->options()->create([
+                'name' => $option['name'],
+                'type' => $option['type'], // 'select' or 'radio'
+            ]);
+
+            foreach ($option['values'] as $value) {
+                $productOption->values()->create([
+                    'value' => $value['value'],
+                    'price_adjustment' => $value['price_adjustment'] ?? 0,
+                ]);
+            }
+        }
+
+
         // Attach product images
         foreach ($this->productImages as $image) {
             $product->addMedia($image)->toMediaCollection('product_images');
         }
 
-        $this->reset(['productName', 'productDescription', 'productPrice', 'productStock']);
+        $this->reset(['productName', 'productDescription', 'productPrice', 'productStock', 'productImages', 'options']);
         $this->loadProducts();
         session()->flash('success', 'Product created successfully.');
     }
 
     public function loadProduct_delete($id)
     {
-        $product = Products::findOrFail($id);
+        $product = Product::findOrFail($id);
         $this->productId = $id;
         $this->productName = $product->name;
         $this->confirmationName = '';
@@ -115,7 +166,7 @@ class ProductManager extends Component
             return;
         }
 
-        $product = Products::findOrFail($this->productId);
+        $product = Product::findOrFail($this->productId);
         $this->dispatch('close-delete-product-modal');
         $product->delete();
         $this->reset(['productId', 'productName', 'confirmationName']);
@@ -125,7 +176,7 @@ class ProductManager extends Component
 
     public function loadViewProduct($id)
     {
-        $product = Products::findOrFail($id);
+        $product = Product::findOrFail($id);
         $this->current_image = $product->getMedia('product_images');
         $this->productId = $id;
         $this->productName = $product->name;
@@ -138,7 +189,7 @@ class ProductManager extends Component
     public function loadProduct($id)
     {
 
-        $product = Products::findOrFail($id);
+        $product = Product::findOrFail($id);
         $this->current_image = $product->getMedia('product_images');
         $this->productId = $id;
         $this->productName = $product->name;
@@ -159,7 +210,7 @@ class ProductManager extends Component
             'newImage.*'         => 'nullable|image|max:2048',
         ]);
 
-        $product = Products::findOrFail($this->productId);
+        $product = Product::findOrFail($this->productId);
 
         // 1️⃣ Core attributes
         $product->update([

@@ -18,7 +18,7 @@ class ProductOptionValue extends Model
 
     //Relations
     public function option() {
-        return $this->belongsTo(ProductOption::class);
+        return $this->belongsTo(ProductOption::class, 'option_id');
     }
 
 

@@ -88,6 +88,15 @@
                             <span class="text-indigo-600 font-semibold">₱{{ number_format($product->price, 2) }}</span>
                             <span class="text-zinc-500 dark:text-zinc-400">{{ $product->stock }} in stock</span>
                         </div>
+
+                        <!-- //options -->
+                        @foreach ($product->options as $option)
+                            <div class="text-sm text-zinc-700 dark:text-zinc-300 mt-1">
+                                <span class="font-medium">{{ ucfirst($option->name) }}:</span>
+                                {{ $option->values->pluck('value')->join(', ') }}
+                            </div>
+                        @endforeach
+
                         <div class="flex justify-end gap-2 mt-4">
 
                             <!-- //view button (main button) -->
@@ -461,9 +470,6 @@
         </div>
     </div>
 
-
-
-
     <!-- Add Product Modal -->
     <div x-data="{ open: false }" x-on:open-product-modal.window="open = true"
         x-on:keydown.escape.window="open = false" x-show="open" x-transition.opacity
@@ -539,6 +545,62 @@
                             <p class="text-red-500 text-sm">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <!-- Product Options -->
+                <div class="space-y-4 border-t border-zinc-300 dark:border-zinc-700 pt-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-md font-semibold text-zinc-800 dark:text-white">Product Options</h3>
+                        <button type="button" wire:click.prevent="addOption"
+                            class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">+ Add Option</button>
+                    </div>
+
+                    @foreach ($options as $optionIndex => $option)
+                        <div class="space-y-2 border border-zinc-200 dark:border-zinc-700 p-4 rounded-lg">
+                            <!-- Option Name -->
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Option Name</label>
+                                <input type="text" wire:model="options.{{ $optionIndex }}.name" placeholder="e.g. Color, Size"
+                                    class="w-full mt-1 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white p-2">
+                                @error("options.$optionIndex.name")
+                                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Option Type -->
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Input Type</label>
+                                <select wire:model="options.{{ $optionIndex }}.type"
+                                    class="w-full mt-1 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white p-2">
+                                    <option value="select">Select</option>
+                                    <option value="radio">Radio</option>
+                                </select>
+                                @error("options.$optionIndex.type")
+                                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Option Values -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Values</label>
+                                @foreach ($option['values'] as $valueIndex => $value)
+                                    <div class="grid grid-cols-2 gap-2 items-center">
+                                        <input type="text" wire:model="options.{{ $optionIndex }}.values.{{ $valueIndex }}.value"
+                                            placeholder="e.g. Red, Large"
+                                            class="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white p-2">
+                                        <input type="number" step="0.01"
+                                            wire:model="options.{{ $optionIndex }}.values.{{ $valueIndex }}.price_adjustment"
+                                            placeholder="Price Adjustment (₱)"
+                                            class="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white p-2">
+                                    </div>
+                                @endforeach
+
+                                <!-- Add Option Value Button -->
+                                <button type="button" wire:click.prevent="addOptionValue({{ $optionIndex }})"
+                                    class="text-indigo-500 hover:underline text-sm mt-2">+ Add Value</button>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
 
                 <!-- Actions -->
