@@ -176,26 +176,65 @@ class ProductManager extends Component
 
     public function loadViewProduct($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with(['options', 'options.values'])->findOrFail($id);
+
         $this->current_image = $product->getMedia('product_images');
         $this->productId = $id;
         $this->productName = $product->name;
         $this->productDescription = $product->description;
         $this->productPrice = $product->price;
         $this->productStock = $product->stock;
+
+        // load existing options and values for the product
+        $this->options = [];
+        foreach ($product->options as $option) {
+            $optionValues = [];
+            foreach ($option->values as $value) {
+                $optionValues[] = [
+                    'value' => $value->value,
+                    'price_adjustment' => $value->price_adjustment,
+                ];
+            }
+            $this->options[] = [
+                'name' => $option->name,
+                'type' => $option->type,
+                'values' => $optionValues,
+            ];
+        }
+
+
         $this->dispatch('open-view-product-modal');
     }
 
     public function loadProduct($id)
     {
 
-        $product = Product::findOrFail($id);
+        $product = Product::with(['options', 'options.values'])->findOrFail($id);
         $this->current_image = $product->getMedia('product_images');
         $this->productId = $id;
         $this->productName = $product->name;
         $this->productDescription = $product->description;
         $this->productPrice = $product->price;
         $this->productStock = $product->stock;
+
+
+        // load existing options and values for the product
+        $this->options = [];
+        foreach ($product->options as $option) {
+            $optionValues = [];
+            foreach ($option->values as $value) {
+                $optionValues[] = [
+                    'value' => $value->value,
+                    'price_adjustment' => $value->price_adjustment,
+                ];
+            }
+            $this->options[] = [
+                'name' => $option->name,
+                'type' => $option->type,
+                'values' => $optionValues,
+            ];
+        }
+
         $this->dispatch('open-edit-product-modal');
     }
 
@@ -208,64 +247,43 @@ class ProductManager extends Component
             'productPrice'       => 'required|numeric|min:0',
             'productStock'       => 'required|integer|min:0',
             'newImage.*'         => 'nullable|image|max:2048',
+
+            // Validate option structure
+
+            'options.*.name'        => 'required|string|max:255',
+            'options.*.type'        => 'required|string|in:select,radio',
+            'options.*.values.*.value' => 'required|string|max:255',
+            'options.*.values.*.price_adjustment' => 'nullable|numeric|min:0',
+
         ]);
+
 
         $product = Product::findOrFail($this->productId);
 
-        // 1️⃣ Core attributes
+        // update the product
         $product->update([
-            'name'        => $this->productName,
+            'name' => $this->productName,
             'description' => $this->productDescription,
-            'price'       => $this->productPrice,
-            'stock'       => $this->productStock,
+            'price' => $this->productPrice,
+            'stock' => $this->productStock,
         ]);
 
-        // 2️⃣ Debug: what’s in newImage?
-        Log::debug('UPDATE_PRODUCT: newImage property dump', ['newImage' => $this->newImage]);
-        session()->flash('debug', '🛠️ Uploaded files: ' . count($this->newImage));
+        // update existing options and values for the product
+        $product->options()->delete();
 
-        if (! empty($this->newImage)) {
-            // Debug before clearing
-            Log::debug('UPDATE_PRODUCT: clearing media collection', ['collection' => 'product_images']);
-            $product->clearMediaCollection('product_images');
+        foreach ($this->options as $option) {
+            $productOption = $product->options()->create([
+                'name' => $option['name'],
+                'type' => $option['type'], // 'select' or 'radio'
+            ]);
 
-            foreach ($this->newImage as $idx => $upload) {
-                try {
-                    $realPath = $upload->getRealPath();
-                    Log::debug("UPDATE_PRODUCT: adding #{$idx}", [
-                        'originalName' => $upload->getClientOriginalName(),
-                        'realPath'     => $realPath,
-                    ]);
-
-                    $product
-                        ->addMedia($realPath)
-                        ->toMediaCollection('product_images');
-
-                } catch (\Exception $e) {
-                    // Log any errors during addMedia
-                    Log::error("UPDATE_PRODUCT: failed to attach image #{$idx}", [
-                        'error' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString(),
-                    ]);
-                    session()->flash('error', "Failed to attach image #{$idx}: " . $e->getMessage());
-                }
+            foreach ($option['values'] as $value) {
+                $productOption->values()->create([
+                    'value' => $value['value'],
+                    'price_adjustment' => $value['price_adjustment'],
+                ]);
             }
-            session()->flash('debug', '🛠️ Attached images: ' . count($product->getMedia('product_images')));
         }
-
-        //  Reset & reload
-        $this->dispatch('close-edit-product-modal');
-        $this->reset([
-            'productId',
-            'productName',
-            'productDescription',
-            'productPrice',
-            'productStock',
-            'newImage',
-        ]);
-        $this->loadProducts();
-
-        session()->flash('success', 'Product updated successfully.');
     }
 
     public function openImportProductModal() {
