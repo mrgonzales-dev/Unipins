@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register.seller.store') }}">
         @csrf
 
         <!-- Name -->
@@ -16,6 +16,34 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- Number -->
+        <div class="mt-4">
+            <x-input-label for="number" :value="__('Number')" />
+            <x-text-input id="number" class="block mt-1 w-full" type="text" name="number" :value="old('number')" required />
+            <x-input-error :messages="$errors->get('number')" class="mt-2" />
+        </div>
+
+        <!-- Organization -->
+        <div class="mt-4">
+            <x-input-label for="organization" :value="__('Organization (if any)')" />
+            <x-text-input id="organization" class="block mt-1 w-full" type="text" name="organization" :value="old('organization')" />
+            <x-input-error :messages="$errors->get('organization')" class="mt-2" />
+        </div>
+
+        <!-- Type of Business -->
+        <div class="mt-4">
+            <x-input-label for="type_of_business" :value="__('Type of Business')" />
+            <x-text-input id="type_of_business" class="block mt-1 w-full" type="text" name="type_of_business" :value="old('type_of_business')" required />
+            <x-input-error :messages="$errors->get('type_of_business')" class="mt-2" />
+        </div>
+
+        <!-- Way of Payment -->
+        <div class="mt-4">
+            <x-input-label for="way_of_payment" :value="__('Way of Payment')" />
+            <x-text-input id="way_of_payment" class="block mt-1 w-full" type="text" name="way_of_payment" :value="old('way_of_payment')" required />
+            <x-input-error :messages="$errors->get('way_of_payment')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
@@ -26,15 +54,6 @@
                             required autocomplete="new-password" />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Role Selection -->
-        <div class="mt-4">
-            <x-input-label for="role" :value="__('Register as')" />
-            <select id="role" name="role" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                <option value="buyer">Buyer</option>
-                <option value="seller">Seller</option>
-            </select>
         </div>
 
         <!-- Confirm Password -->
@@ -58,12 +77,4 @@
             </x-primary-button>
         </div>
     </form>
-
-    <script>
-        document.getElementById('role').addEventListener('change', function () {
-            if (this.value === 'seller') {
-                window.location.href = "{{ route('register.seller') }}";
-            }
-        });
-    </script>
 </x-guest-layout>

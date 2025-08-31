@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:create items')->only(['create', 'store']);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -31,7 +36,7 @@ class ItemController extends Controller
      */
     public function create()
     {
-        //
+        return view('items.create');
     }
 
     /**
@@ -39,7 +44,17 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate(
+            [
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            ]
+        );
+
+        Item::create($request->all());
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Item created successfully.');
     }
 
     /**
