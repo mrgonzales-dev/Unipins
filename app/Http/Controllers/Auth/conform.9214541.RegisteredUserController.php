@@ -19,15 +19,8 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
+        // return view('auth.register');
         return view('auth.registerAs');
-    }
-
-    /**
-     * Display the registration view.
-     */
-    public function createBuyer(): View
-    {
-        return view('auth.register');
     }
 
     /**
@@ -45,17 +38,21 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+            ]
+        );
 
-        $user = User::create([
+        $user = User::create(
+            [
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-        ]);
+            ]
+        );
 
         $user->assignRole('buyer');
 
@@ -73,7 +70,8 @@ class RegisteredUserController extends Controller
      */
     public function storeSeller(Request $request): RedirectResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -81,9 +79,11 @@ class RegisteredUserController extends Controller
             'organization' => ['nullable', 'string', 'max:255'],
             'type_of_business' => ['required', 'string', 'max:255'],
             'way_of_payment' => ['required', 'string', 'max:255'],
-        ]);
+            ]
+        );
 
-        $user = User::create([
+        $user = User::create(
+            [
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -91,7 +91,8 @@ class RegisteredUserController extends Controller
             'organization' => $request->organization,
             'type_of_business' => $request->type_of_business,
             'way_of_payment' => $request->way_of_payment,
-        ]);
+            ]
+        );
 
         $user->assignRole('seller');
 

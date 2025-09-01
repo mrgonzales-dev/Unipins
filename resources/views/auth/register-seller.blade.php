@@ -1,4 +1,5 @@
 <x-guest-layout>
+    <h1 class="text-3xl font-bold text-center mb-8">Registering as Seller</h1>
     <form method="POST" action="{{ route('register.seller.store') }}">
         @csrf
 

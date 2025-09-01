@@ -1,5 +1,6 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <h1 class="text-3xl font-bold text-center mb-8">Registering as Buyer</h1>
+    <form method="POST" action="{{ route('register.buyer.store') }}">
         @csrf
 
         <!-- Name -->
@@ -28,15 +29,6 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <!-- Role Selection -->
-        <div class="mt-4">
-            <x-input-label for="role" :value="__('Register as')" />
-            <select id="role" name="role" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                <option value="buyer">Buyer</option>
-                <option value="seller">Seller</option>
-            </select>
-        </div>
-
         <!-- Confirm Password -->
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
@@ -58,12 +50,4 @@
             </x-primary-button>
         </div>
     </form>
-
-    <script>
-        document.getElementById('role').addEventListener('change', function () {
-            if (this.value === 'seller') {
-                window.location.href = "{{ route('register.seller') }}";
-            }
-        });
-    </script>
 </x-guest-layout>
